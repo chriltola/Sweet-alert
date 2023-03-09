@@ -1,138 +1,114 @@
+<?php
+$con=mysqli_connect('localhost','root','','youtube');
+$sub_sql="";
+$toDate=$fromDate="";
+if(isset($_POST['submit'])){
+	$from=$_POST['from'];
+	$fromDate=$from;
+	$fromArr=explode("/",$from);
+	$from=$fromArr['2'].'-'.$fromArr['1'].'-'.$fromArr['0'];
+	$from=$from." 00:00:00";
+	
+	$to=$_POST['to'];
+	$toDate=$to;
+	$toArr=explode("/",$to);
+	$to=$toArr['2'].'-'.$toArr['1'].'-'.$toArr['0'];
+	$to=$to." 23:59:59";
+	
+	$sub_sql= " where added_on >= '$from' && added_on <= '$to' ";
+}
 
-
+$res=mysqli_query($con,"select * from contact_us $sub_sql order by id desc");
+?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<meta charset="utf-8">
-	<title>How to Delete Table Row using Sweetalert2 with PHP/MySQLi</title>
-	<link rel="stylesheet" type="text/css" href="asset/bootstrap/css/bootstrap.min.css">
-	<link rel="stylesheet" type="text/css" href="asset/sweet_alert/sweetalert2.min.css">
-	<!--Bootstrap -->
-	<link rel="stylesheet" href="css/bootstrap.css" type="text/css">
-	<style type="text/css">
-		.mt20{
-			margin-top:20px;
-		}
-	</style>
+  <title>Contact Us</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
 </head>
 <body>
-	<div class="container">
-		<h3 class="text-center mt20 mb5">How to delete Table Row using Sweetalert2</h3>
-		<div class="card col-md-6 my-6 ">
-			<form class="forms-sample" method="post" enctype="multipart/form-data" class="form-horizontal">
 
-				<div class="row ">
-					<div class="form-group col-md-12">
-						<label >Cat_name</label>
-						<input type="text" type="text" id="name" name="name" placeholder="First name"  class="form-control" required />
-					</div>
-				</div>
-				<div class="row ">
-					<div class="form-group col-md-12">
-						<label >Description</label>
-						<input type="text" id="lastname" name="lastname" placeholder="Enter Last name"  class="form-control" required />
-					</div>
-				</div>
-				<button type="submit" name="submit" value="Submit"  class="btn btn-primary  mr-2 mb-4">Save</button>
-			</form>
-			
-		</div>
-		<div class="row col-md-12 ">
-			<table class="table table-bordered mt20">
-				<thead>
-					<th>No.</th>
-					<th>Cat_name</th>
-					<th>Description</th>
-			
-				</thead>
-				<tbody id="tbody">
-
-				</tbody>
-			</table>
-		</div>
-	</div>
-
-	<script src="asset/jquery.min.js"></script>
-	<script src="asset/bootstrap/js/bootstrap.min.js"></script>
-	<script src="asset/sweet_alert/sweetalert2.min.js"></script>
-	<!-- <script src="asset/app.js"></script> -->
-	<?php
-	session_start();
-	error_reporting(0);
-	$conn = new mysqli('localhost', 'root', 'Password1', 'dbproduct');
-	if(isset($_POST['submit']))
-	{
-		$name=$_POST['name'];
-		$lastname=$_POST['lastname'];
-		$query=mysqli_query($conn,"insert into members(cat_name,description) values('$name','$lastname')");
-		if($query)
-			{?>
-				<script >
-					swal.fire({
-						'title': 'Thank you',
-						'text': 'Saved successfuly',
-						'icon': 'success',
-						'type': 'success'
-					})
-				</script>
-				<?php	  
-			}
-			else
-			{
-				$_SESSION['errmsg']="Data not inserted";
-			}
-		}
-		?>
-		<script type="text/javascript">
-				
-			</script>
-			<script type="text/javascript">
-				$(document).ready(function(){
-					fetch();
-
-					$(document).on('click', '.delete_product', function(){
-						var id = $(this).data('id');
-
-						swal.fire({
-							title: 'Are you sure?',
-							text: "You won't be able to revert this!",
-							icon: 'warning',
-							showCancelButton: true,
-							confirmButtonColor: '#3085d6',
-							cancelButtonColor: '#d33',
-							confirmButtonText: 'Yes, delete it!',
-						}).then((result) => {
-							if (result.value){
-								$.ajax({
-									url: 'api.php?action=delete',
-									type: 'POST',
-									data: 'id='+id,
-									dataType: 'json'
-								})
-								.done(function(response){
-									swal.fire('Deleted!', response.message, response.status);
-									fetch();
-								})
-								.fail(function(){
-									swal.fire('Oops...', 'Something went wrong with ajax !', 'error');
-								});
-							}
-
-						})
-
-					});
-				});
-
-				function fetch(){
-					$.ajax({
-						method: 'POST',
-						url: 'api.php',
-						dataType: 'json',
-						success: function(response){
-							$('#tbody').html(response);
-						}
-					});
-				}
-			</script>
-		</body>
-		</html>
+<div class="container">
+  <br/><h1>Contact Us</h1><br/>
+  
+  <div>
+	<form method="post">
+		<label for="from">From</label>
+		<input type="text" id="from" name="from" required value="<?php echo $fromDate?>">
+		<label for="to">to</label>
+		<input type="text" id="to" name="to" required value="<?php echo $toDate?>">
+		<input type="submit" name="submit" value="Filter">
+	</form>
+  </div>
+  <br/><br/>
+  <?php if(mysqli_num_rows($res)>0){?>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+		<th>Added On</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php while($row=mysqli_fetch_assoc($res)){?>
+      <tr>
+        <td><?php echo $row['id']?></td>
+        <td><?php echo $row['name']?></td>
+		<td><?php echo $row['email']?></td>
+		<td><?php echo $row['added_on']?></td>
+      </tr>
+	  <?php } ?>
+    </tbody>
+  </table>
+  <?php } else {
+	echo "No data found";  
+  }
+  ?>
+</div>
+<script>
+  $( function() {
+    var dateFormat = "dd/mm/yy",
+      from = $( "#from" )
+        .datepicker({
+          defaultDate: "+1w",
+          changeMonth: true,
+          numberOfMonths: 1,
+		  dateFormat:"dd/mm/yy",
+        })
+        .on( "change", function() {
+          to.datepicker( "option", "minDate", getDate( this ) );
+        }),
+      to = $( "#to" ).datepicker({
+        defaultDate: "+1w",
+        changeMonth: true,
+        numberOfMonths: 1,
+		dateFormat:"dd/mm/yy",
+      })
+      .on( "change", function() {
+        from.datepicker( "option", "maxDate", getDate( this ) );
+      });
+ 
+    function getDate( element ) {
+      var date;
+      try {
+        date = $.datepicker.parseDate( dateFormat, element.value );
+      } catch( error ) {
+        date = null;
+      }
+ 
+      return date;
+    }
+  } );
+  </script>
+</body>
+</html>
